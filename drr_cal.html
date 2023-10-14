@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+
+<html>
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>DRR Report</title>
+    </head>
+
+    <body>
+    
+        <div style="height: 2000px; width: 1000px; background-color: deepskyblue;">
+
+            <h2>Daily Run Rate (DRR) Calculator</h2>
+
+            <table id="myTable" style="background-color: green; height: 40px; width: 1000px;" border="1">
+                
+                <tr>
+                    <th>Action</th>
+                    <th>ID</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Month Name</th>
+                    <th>Excluded Dates</th>
+                    <th>Number of Days</th>
+                    <th>Lead Count</th>
+                    <th>Expected DRR</th>
+                </tr>
+                
+                <tr contenteditable="true">
+                    <td></td>
+                    <td></td>
+                    <td><input type="date" id="startDate"></td>
+                    <td><input type="date" id="endDate"></td>
+                    <td id="monthName"></td>
+                    <td><input type="number" id="excludeDate"></td>
+                    <td id="numDays"></td>
+                    <td><input type="number" id="leadCount"></td>
+                    <td id="expectedDRR"></td>
+                </tr>
+
+            </table>
+
+            <button onclick="saveData()" style="background-color: blue; color: white; border-radius: 12px; padding: 14px 28px; border: none; cursor: pointer; width: 100px; opacity: 0.5; position: relative;">Save</button>
+            <p>Please Insert required data in above calculator and press Save button in the left.</p>
+
+            <h2>DRR Data</h2>
+
+                <div style=" height: 600px; width: 1000px; background-color: lightseagreen">
+
+                    <table id="savedData" style="width:100%; border-collapse: collapse;" border="1">
+                        <!-- Column headings for saved data -->
+                        <tr>
+                            <th>Action</th>
+                            <th>ID</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Month Name</th>
+                            <th>Excluded Dates</th>
+                            <th>Number of Days</th>
+                            <th>Lead Count</th>
+                            <th>Expected DRR</th>
+                            <th>Last Updated</th>
+                        </tr>
+                    
+                        <!-- Saved data will be added here -->
+                        <!-- This will be filled by JavaScript -->
+                    </table>
+                </div>
+
+
+            <script>
+            
+                function calculateDays(startDate, endDate, excludeDate) {
+                var start = new Date(startDate);
+                var end = new Date(endDate);
+                var diff = Math.abs(end - start);
+              return Math.floor(diff / (1000 * 60 * 60 * 24)) - excludeDate;
+            }
+
+                function calculateDRR(leadCount, numDays) {
+                return leadCount / numDays;
+            }   
+
+                function getMonthName(date) {
+                var monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+                var d = new Date(date);
+                return monthNames[d.getMonth()];
+            }
+
+                function updateTable() {
+                var startDate = document.getElementById("startDate").value;
+                var endDate = document.getElementById("endDate").value;
+                var excludeDate = document.getElementById("excludeDate").value;
+                var leadCount = document.getElementById("leadCount").value;
+                
+                var numDays = calculateDays(startDate, endDate, excludeDate);
+                document.getElementById("numDays").innerHTML = numDays;
+                
+                var monthName = getMonthName(startDate);
+                document.getElementById("monthName").innerHTML = monthName;
+                
+                if (leadCount && numDays) {
+                var expectedDRR = calculateDRR(leadCount, numDays);
+                document.getElementById("expectedDRR").innerHTML = expectedDRR.toFixed(2);
+                }
+            }
+
+                document.getElementById("startDate").addEventListener("change", updateTable);
+                document.getElementById("endDate").addEventListener("change", updateTable);
+                document.getElementById("excludeDate").addEventListener("change", updateTable);
+                document.getElementById("leadCount").addEventListener("change", updateTable);
+
+                function saveData() {
+                
+               // Get table data
+                var table = document.getElementById('myTable');
+                
+               // Create new row for saved data table
+                var tableSavedData = document.getElementById('savedData');
+                
+               // Create new row and cells
+                var newRow   = tableSavedData.insertRow(tableSavedData.rows.length);
+                
+                for (var j = 0, col; col = table.rows[1].cells[j]; j++) {
+                    // Create a new cell
+                    var newCell  = newRow.insertCell(j);
+                
+                    // Add value to the new cell
+                    if (j ==2 || j ==3 || j ==5 || j ==7) { // input fields
+                        newCell.innerHTML = col.children[0].value;
+                    } else { // editable fields
+                        newCell.innerHTML = col.innerHTML;
+                    }
+                }
+            
+               // Add last updated cell with current date and time
+                var newCell  = newRow.insertCell(9);
+                newCell.innerHTML = new Date().toLocaleString();
+            
+               // Clear input fields in main table
+                for (var j = 0, col; col = table.rows[1].cells[j]; j++) {
+                    if (j == 2 || j ==3 || j ==5 || j ==7) { // input fields
+                        col.children[0].value = '';
+                    } else { // editable fields
+                        col.innerHTML = '';
+                    }
+                }
+            }
+
+            </script>
+        
+        </div>
+
+    </body>
+
+</html> 
